@@ -10,6 +10,7 @@
     <PackageReference Include="ClosedXML" Version="0.97.0" />
     <PackageReference Include="IronXL.Excel" Version="2022.11.10251" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.11" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
