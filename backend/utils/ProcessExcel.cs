@@ -9,6 +9,14 @@ public class ProcessExcel {
         _workBook = new XLWorkbook(filename);
     }
 
+    public DataTable ReadWorkBook() {
+        DataTable dt = new DataTable();
+        foreach (var workSheet in _workBook.Worksheets) {
+            dt.Merge(ReadWorksheet(workSheet.Name));
+        }
+        return dt;
+    }
+
     // Read the data in a specific sheet
     public DataTable ReadWorksheet(String name) {
         var workSheet = _workBook.Worksheet(name);
