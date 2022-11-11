@@ -44,9 +44,11 @@ namespace backend.Models
                     .HasColumnType("int(11)")
                     .HasColumnName("active_power_im");
 
-                entity.Property(e => e.Division)
-                    .HasColumnType("float")
-                    .HasColumnName("division");
+                entity.Property(e => e.Division).HasColumnName("division");
+
+                entity.Property(e => e.FechaIm)
+                    .HasColumnType("datetime")
+                    .HasColumnName("fecha_im");
 
                 entity.Property(e => e.IdI)
                     .HasColumnType("int(11)")

@@ -7,6 +7,7 @@ namespace backend.Models
     {
         public long Id { get; set; }
         public int IdI { get; set; }
+        public DateTime FechaIm { get; set; }
         public int ActivePowerIm { get; set; }
         public float Division { get; set; }
     }
