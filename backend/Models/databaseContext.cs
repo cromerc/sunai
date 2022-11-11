@@ -45,7 +45,7 @@ namespace backend.Models
                     .HasColumnName("active_power_im");
 
                 entity.Property(e => e.Division)
-                    .HasColumnType("int(11)")
+                    .HasColumnType("float")
                     .HasColumnName("division");
 
                 entity.Property(e => e.IdI)
