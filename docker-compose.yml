@@ -13,6 +13,7 @@ services:
       - SYS_NICE
     volumes:
       - database:/var/lib/mysql
+      - ./schema:/docker-entrypoint-initdb.d
     networks:
       - network
     # don't leave the port open on production, this is just to help during development
