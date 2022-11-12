@@ -1,37 +1,129 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
 import { Panel } from 'primereact/panel';
 import { Card } from 'primereact/card';
+import axios from 'axios';
 
 import ChartComponent from './ChartComponent';
 
-class Coords {
-    x = [];
-    y = [];
-
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-};
-
 export default function DashboardComponent() {
+    const uploadUrl = "api/upload";
+    const maxSumUrl = "api/maxsum";
+    const deviceUrl = "api/device";
+    const devicesUrl = "api/devices";
+
     const toast = useRef(null);
 
-    const [sum, setSum] = useState(0);
-    const [max, setMax] = useState(0);
+    const [sum, setSum] = useState("0");
+    const [max, setMax] = useState("0");
 
-    const [data1, setData1] = useState(new Coords());
-    const [data2, setData2] = useState(new Coords());
+    const [devices, setDevices] = useState([]);
+    // eslint-disable-next-line no-array-constructor
+    const [data, setData] = useState([{}]);
 
     const onUpload = () => {
-        toast.current.show({ severity: 'info', summary: 'Éxito', detail: 'File Uploaded' });
+        // @ts-ignore
+        toast.current.show({ severity: 'info', summary: 'Éxito', detail: 'Archivo enviado!' });
+        getMaxSum();
     };
 
-    const chartData = () => {
-
+    async function getMaxSum() {
+        try {
+            const response = await axios.get(maxSumUrl);
+            if (response.status === 200) {
+                var max = parseInt(response.data.max);
+                var sum = parseInt(response.data.sum);
+                setMax(max.toLocaleString("es-CL"));
+                setSum(sum.toLocaleString("es-CL"));
+            }
+        }
+        catch (error) {
+            console.error(error);
+        }
     };
+
+        async function getDevices() {
+            try {
+                const response = await axios.get(devicesUrl);
+                if (response.status === 200) {
+                    setDevices(response.data);
+                }
+            }
+            catch (error) {
+                console.error(error);
+            }
+        };
+
+    useEffect(() => {
+        getMaxSum();
+        getDevices();
+    }, []);
+
+    /*async function getDeviceData(device) {
+        try {
+            const response = await axios.get(deviceUrl + "/" + device);
+            if (response.status === 200) {
+                let times = [];
+                let powers = [];
+
+                response.data.forEach(element => {
+                    times.push(element.FechaIm);
+                    powers.push(element.ActivePowerIm);
+                });
+
+                const newData = {
+                    device: device,
+                    times: times,
+                    powers: powers
+                };
+                
+                setData(prevState => ({
+                    ...prevState,
+                    data: { ...prevState, newData}
+                }));
+            }
+        }
+        catch (error) {
+            console.error(error);
+        }
+    };*/
+
+    useEffect(() => {
+        const deviceDataUpdate = async (device) => {
+            try {
+                const response = await axios.get(deviceUrl + "/" + device);
+                if (response.status === 200) {
+                    let times = [];
+                    let powers = [];
+
+                    response.data.forEach(element => {
+                        times.push(new Date(element.FechaIm).toLocaleTimeString("es"));
+                        powers.push(element.ActivePowerIm);
+                    });
+
+                    const newData = [{
+                        device: device,
+                        times: times,
+                        powers: powers
+                    }];
+
+                    const newState = data.concat(data, newData);
+
+                    setData(newState);
+                }
+            }
+            catch (error) {
+                console.error(error);
+            }
+        };
+
+        devices.forEach(element => {
+            deviceDataUpdate(element);
+        });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [devices]);
 
     return (
         <div className="card py-4 px-8">
@@ -41,16 +133,16 @@ export default function DashboardComponent() {
                     <Panel header="Dashboard">
                         <div className="flex justify-content-center">
                             <FileUpload mode="basic"
-                                    name="uploads[]"
-                                    url="api/excel"
-                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                    maxFileSize={1000000}
-                                    onUpload={onUpload} />
+                                name="uploads[]"
+                                url={uploadUrl}
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                maxFileSize={1000000}
+                                onUpload={onUpload} />
                         </div>
                         <div className="grid">
                             <div className="flex justify-content-center col-6">
                                 <Card title="Chart" style={{ textAlign: 'center' }} className='w-9'>
-                                    <ChartComponent data1={data1} data2={data2} />
+                                    <ChartComponent data={data} />
                                 </Card>
                             </div>
                             <div className="flex justify-content-center col-6">

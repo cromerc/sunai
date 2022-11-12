@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
     Chart as ChartJS,
@@ -29,33 +29,43 @@ export const options = {
     },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+export default function ChartComponent({ data }) {
+    const [chartData, setChartData] = useState({
+        labels: [],
+        datasets: [
+            {
+                label: 'Dataset',
+                data: [1, 4, 10],
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }
+        ]
+    });
 
-export const data = {
-    labels,
-    datasets: [
-        {
-            label: 'Dataset 1',
-            data: [1, 4, 10],
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        },
-        {
-            label: 'Dataset 2',
-            data: [1, 2, 3],
-            borderColor: 'rgb(53, 162, 235)',
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-        },
-    ],
-};
+    const [labels, setLabels] = useState([]);
 
-export default function ChartComponent({ data1, data2 }) {
-    data.datasets[0].data = data1.y;
-    data.datasets[1].data = data2.y;
+    useEffect(() => {
+        if (data.length > 0) {
+            setLabels(data[data.length - 1].times);
+            setChartData(
+                {
+                    labels,
+                    datasets: [
+                        {
+                            label: data[data.length - 1].device,
+                            data: data[data.length - 1].powers,
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        }
+                    ]
+                }
+            );
+        }
+    }, [data]);
 
     return (
         <div className="w-full">
-            <Line options={options} data={data} />
+            <Line options={options} data={chartData} />
         </div>
     );
 };
