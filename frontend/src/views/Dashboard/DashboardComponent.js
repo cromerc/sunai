@@ -26,6 +26,7 @@ export default function DashboardComponent() {
         // @ts-ignore
         toast.current.show({ severity: 'info', summary: 'Éxito', detail: 'Archivo enviado!' });
         getMaxSum();
+        getDeviceData();
     };
 
     async function getMaxSum() {
@@ -60,7 +61,7 @@ export default function DashboardComponent() {
         getDevices();
     }, []);
 
-    /*async function getDeviceData(device) {
+    async function getDeviceData(device) {
         try {
             const response = await axios.get(deviceUrl + "/" + device);
             if (response.status === 200) {
@@ -68,26 +69,25 @@ export default function DashboardComponent() {
                 let powers = [];
 
                 response.data.forEach(element => {
-                    times.push(element.FechaIm);
+                    times.push(new Date(element.FechaIm).toLocaleTimeString("es"));
                     powers.push(element.ActivePowerIm);
                 });
 
-                const newData = {
+                const newData = [{
                     device: device,
                     times: times,
                     powers: powers
-                };
-                
-                setData(prevState => ({
-                    ...prevState,
-                    data: { ...prevState, newData}
-                }));
+                }];
+
+                const newState = data.concat(data, newData);
+
+                setData(newState);
             }
         }
         catch (error) {
             console.error(error);
         }
-    };*/
+    };
 
     useEffect(() => {
         const deviceDataUpdate = async (device) => {
